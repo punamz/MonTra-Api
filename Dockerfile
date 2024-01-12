@@ -21,9 +21,12 @@ RUN dotnet publish "./MonTraApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MonTraApi.dll"]
+
 
 ENV USERNAME= 
 ENV PASSWORD=
 ENV BASE_URL=
 ENV DATABASE_NAME=
+
+
+ENTRYPOINT ["dotnet", "MonTraApi.dll"]
