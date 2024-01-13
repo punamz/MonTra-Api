@@ -10,9 +10,24 @@ public class ConstantValue
     #endregion
 
     #region error messsage code
+    // common error code
+    public const string Err0001 = "err0001";
+    public const string Err0002 = "err0002";
+    public const string Err0002Message = "Parameter does not valid";
 
-    public const string err0001 = "err0001";
-    public const string err1001 = "err1001";
-    public const string err1002 = "err1002";
+    // error message
+    public const string Err1001 = "err1001";
+    public const string Err1001Message = "Email or password incorrect";
+    public const string Err1002 = "err1002";
+    public const string Err1002Message = "User not found";
+    #endregion
+
+    #region database collection name
+    public const string AccountCollection = "Account";
+    public const string UserCollection = "User";
+    #endregion
+
+    #region another value
+    public const char PasswordHashDelimiter = ';';
     #endregion
 }

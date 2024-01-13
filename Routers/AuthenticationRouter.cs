@@ -12,7 +12,6 @@ public static class AuthenticationRouter
         string groupName = "auth";
         string tag = "Authentication";
 
-
         builder.MapPost($"/{groupName}/login", async (IAuthenticationService authenticationService, LoginParam param) => await authenticationService.Login(param: param)).WithTags(tag);
     }
 
