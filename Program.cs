@@ -27,8 +27,8 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 
-var a = $"mongodb+srv://{Username}:{Password}@{DatabaseUrl}/?retryWrites=true&w=majority";
-builder.Services.AddTransient(x => new MongoClient($"mongodb+srv://{Username}:{Password}@{DatabaseUrl}/?retryWrites=true&w=majority").GetDatabase(DatabaseName));
+var connectionString = $"mongodb+srv://{Username}:{Password}@{DatabaseUrl}/?retryWrites=true&w=majority";
+builder.Services.AddTransient(x => new MongoClient(connectionString).GetDatabase(DatabaseName));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationRepository>();
 
 
@@ -43,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => a);
+app.MapGet("/", () => DateTime.Now);
 app.AuthenticationMap();
 
 
