@@ -10,6 +10,6 @@ services:
             - ASPNETCORE_ENVIRONMENT=docker
             - ASPNETCORE_URLS=http://+:80
         ports:
-            - 3000:80
+            - 80:80
         env_file:
             - .env

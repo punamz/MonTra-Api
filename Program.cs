@@ -43,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => DateTime.Now);
+app.MapGet("/", () => a);
 app.AuthenticationMap();
 
 
