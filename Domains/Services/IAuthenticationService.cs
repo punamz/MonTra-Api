@@ -4,6 +4,6 @@ namespace MonTraApi.Domains.Services;
 
 public interface IAuthenticationService
 {
-    Task<ResultDTO<UserDTO>> Login(LoginParam param);
+    Task<ResultDTO<LoginResponse>> Login(LoginRequest param);
 
 }

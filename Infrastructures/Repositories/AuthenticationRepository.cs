@@ -19,29 +19,33 @@ public class AuthenticationRepository : IAuthenticationService
         _mapper = mapper;
     }
 
-    public async Task<ResultDTO<UserDTO>> Login(LoginParam param)
+    public async Task<ResultDTO<LoginResponse>> Login(LoginRequest param)
     {
         try
         {
             // check valid param
             if (param.Email == null || param.Password == null)
-                return Helper.GetResponse<UserDTO>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0002, message: ConstantValue.Err0002Message);
+                return Helper.GetResponse<LoginResponse>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0002, message: ConstantValue.Err0002Message);
 
             AccountEntity? account = await _database.AccountColection().GetAccountByEmailPassword(param.Email, param.Password);
 
             if (account == null)
-                return Helper.GetResponse<UserDTO>(statusCode: StatusCodeValue.NoData, errorCode: ConstantValue.Err1001, message: ConstantValue.Err1001Message);
+                return Helper.GetResponse<LoginResponse>(statusCode: StatusCodeValue.NoData, errorCode: ConstantValue.Err1001, message: ConstantValue.Err1001Message);
 
             UserEntity? user = await _database.UserColection().GetUserById(account.UserId);
             if (user == null)
-                return Helper.GetResponse<UserDTO>(statusCode: StatusCodeValue.NoData, errorCode: ConstantValue.Err1002, message: ConstantValue.Err1002Message);
+                return Helper.GetResponse<LoginResponse>(statusCode: StatusCodeValue.NoData, errorCode: ConstantValue.Err1002, message: ConstantValue.Err1002Message);
 
-            return Helper.GetResponse(data: _mapper.Map<UserEntity, UserDTO>(user));
+            // gen authen token
+            var token = Helper.CreateJWTToken(user);
+
+            var res = new LoginResponse() { User = _mapper.Map<UserEntity, UserDTO>(user), Token = token };
+            return Helper.GetResponse(data: res);
         }
         catch (Exception e)
         {
             Debug.WriteLine(e);
-            return Helper.GetResponse<UserDTO>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
+            return Helper.GetResponse<LoginResponse>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
         }
 
     }

@@ -5,8 +5,8 @@ namespace MonTraApi.Domains.DTOs;
 
 
 [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-public class LoginParam
+public class LoginResponse
 {
-    public string? Email { get; set; }
-    public string? Password { get; set; }
+    public string Token { get; set; } = null!;
+    public UserDTO User { get; set; } = null!;
 }

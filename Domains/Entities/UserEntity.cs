@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace MonTraApi.Domains.Entities;
 
-public class UserEntity
+public class UserEntity : Timestamp
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
@@ -14,6 +14,4 @@ public class UserEntity
     public string FullName { get; set; } = null!;
     [BsonElement("avatar")]
     public string? Avatar { get; set; }
-
-
 }

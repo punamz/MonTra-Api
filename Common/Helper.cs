@@ -1,12 +1,15 @@
-﻿using MonTraApi.Domains.DTOs;
+﻿using Microsoft.IdentityModel.Tokens;
+using MonTraApi.Domains.DTOs;
+using MonTraApi.Domains.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace MonTraApi.Common;
 
 public class Helper
 {
-
-
     public static (string salt, string hashed) HashPassword(string password, string? lastSalt = null)
     {
 
@@ -30,4 +33,22 @@ public class Helper
         };
     }
 
+    public static string CreateJWTToken(UserEntity user)
+    {
+        string jwtKey = Environment.GetEnvironmentVariable(ConstantValue.JWTKey) ?? "";
+        SecurityTokenDescriptor tokenDescriptor = new()
+        {
+            Subject = new ClaimsIdentity(new[]  {
+                new Claim("userId", user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            }),
+            Expires = DateTime.UtcNow.AddMinutes(60),
+            SigningCredentials = new SigningCredentials
+           (new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)), SecurityAlgorithms.HmacSha512Signature)
+        };
+        JwtSecurityTokenHandler tokenHandler = new();
+        SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+        string jwtToken = tokenHandler.WriteToken(token);
+        return jwtToken;
+    }
 }

@@ -7,6 +7,7 @@ public class ConstantValue
     public const string PasswordEnvKey = "PASSWORD";
     public const string BaseUrlEnvKey = "BASE_URL";
     public const string DatabaseNameEnvKey = "DATABASE_NAME";
+    public const string JWTKey = "JWT_KEY";
     #endregion
 
     #region error messsage code
