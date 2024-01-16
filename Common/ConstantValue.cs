@@ -21,6 +21,14 @@ public class ConstantValue
     public const string Err1001Message = "Email or password incorrect";
     public const string Err1002 = "err1002";
     public const string Err1002Message = "User not found";
+    public const string Err1003 = "err1003";
+    public const string Err1003Message = "Email does not valid";
+    public const string Err1004 = "err1004";
+    public const string Err1004Message = "Password does not valid";
+    public const string Err1005 = "err1005";
+    public const string Err1005Message = "Name does not valid";
+    public const string Err1006 = "err1006";
+    public const string Err1006Message = "Email address was used";
     #endregion
 
     #region database collection name

@@ -28,4 +28,15 @@ public static class AccountQuery
         return null;
     }
 
+    /// <summary>
+    /// Get account by email
+    /// </summary>
+    
+    public static async Task<AccountEntity?> GetAccountByEmail(this IMongoCollection<AccountEntity> collection, string email)
+    {
+        AccountEntity? account = await collection.Find(account => account.Email == email).FirstOrDefaultAsync();
+        return account;
+       
+    }
+
 }
