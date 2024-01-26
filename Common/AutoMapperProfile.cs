@@ -9,8 +9,7 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<UserEntity, UserDTO>();
-
-
+        CreateMap<CategoryEntity, CategoryDTO>();
     }
 
 }

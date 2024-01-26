@@ -1,15 +1,19 @@
-﻿using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using MonTraApi.Domains.Entities;
 using System.Text.RegularExpressions;
 
 namespace MonTraApi.Common;
 
-public static partial class Extension
+public static class DatabaseExtension
 {
     public static IMongoCollection<UserEntity> UserColection(this IMongoDatabase database) => database.GetCollection<UserEntity>(ConstantValue.UserCollection);
     public static IMongoCollection<AccountEntity> AccountColection(this IMongoDatabase database) => database.GetCollection<AccountEntity>(ConstantValue.AccountCollection);
+    public static IMongoCollection<CategoryEntity> CategoryColection(this IMongoDatabase database) => database.GetCollection<CategoryEntity>(ConstantValue.CategoryCollection);
+}
 
+
+public static partial class StringValidateExtension
+{
     public static bool IsEmail(this string value) => EmailRegex().IsMatch(value);
     public static bool ValidPassword(this string value) => !value.Contains(' ') && value.Length >= 8;
     public static bool ValidName(this string value)

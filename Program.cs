@@ -46,6 +46,7 @@ builder.Services.AddTransient(x => new MongoClient(connectionString).GetDatabase
 #region repository
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationRepository>();
+builder.Services.AddScoped<ITransactionService, TransactionRepository>();
 
 #endregion
 
@@ -87,6 +88,7 @@ app.UseAuthorization();
 
 app.MapGet("/", () => DateTime.Now);
 app.AuthenticationMap();
+app.TransactionMap();
 
 
 app.Run();

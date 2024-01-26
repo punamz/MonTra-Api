@@ -34,6 +34,7 @@ public class ConstantValue
     #region database collection name
     public const string AccountCollection = "Account";
     public const string UserCollection = "User";
+    public const string CategoryCollection = "Category";
     #endregion
 
     #region another value
