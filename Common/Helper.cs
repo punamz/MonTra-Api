@@ -39,7 +39,7 @@ public class Helper
         SecurityTokenDescriptor tokenDescriptor = new()
         {
             Subject = new ClaimsIdentity(new[]  {
-                new Claim("userId", user.Id),
+                new Claim(ConstantValue.JWTUserIdKey, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             }),

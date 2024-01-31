@@ -10,6 +10,7 @@ public class AutoMapperProfile : Profile
     {
         CreateMap<UserEntity, UserDTO>();
         CreateMap<CategoryEntity, CategoryDTO>();
+        CreateMap<TransactionAggregate, TransactionDTO>();
     }
 
 }

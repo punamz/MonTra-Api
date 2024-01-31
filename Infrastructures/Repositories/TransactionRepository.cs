@@ -59,4 +59,52 @@ public class TransactionRepository : ITransactionService
             return Helper.GetResponse<bool?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
         }
     }
+
+    public async Task<ResultDTO<bool?>> CreateNewTransaction(CreateNewTransactionRequest request)
+    {
+        try
+        {
+            string newTransactionId = ObjectId.GenerateNewId().ToString();
+            TransactionEntity transaction = new()
+            {
+                Id = newTransactionId,
+                CategoryId = request.CategoryId,
+                UserId = request.UserId,
+                Amount = request.Amount,
+                Description = request.Note,
+                TransactionAt = request.TransactionAt,
+            };
+            await _database.TransactionColection().CreateNewTransaction(transaction);
+            return Helper.GetResponse<bool?>(data: true);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return Helper.GetResponse<bool?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
+        }
+    }
+
+    public async Task<ResultDTO<List<TransactionDTO>?>> GetTransactions(string userId, int limit, int offset, OrderByType orderBy, CategoryType? categoryType = null, string? categoryId = null)
+    {
+        try
+        {
+            List<TransactionAggregate> result = await _database.GetTransactionAggregate(
+                userId: userId,
+                limit: limit,
+                offset: offset,
+                OrderBy: orderBy,
+                categoryType: categoryType,
+                categoryId: categoryId);
+
+            if (result.IsNullOrEmpty())
+                return Helper.GetResponse<List<TransactionDTO>?>(statusCode: StatusCodeValue.NoData);
+
+            return Helper.GetResponse<List<TransactionDTO>?>(data: _mapper.Map<List<TransactionAggregate>, List<TransactionDTO>>(result));
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return Helper.GetResponse<List<TransactionDTO>?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
+        }
+    }
 }

@@ -9,4 +9,6 @@ public class Timestamp
     public DateTime CreateAt { get; set; } = DateTime.Now;
     [BsonElement("updateAt")]
     public DateTime UpdateAt { get; set; } = DateTime.Now;
+    [BsonElement("deleteAt")]
+    public DateTime? DeleteAt { get; set; }
 }

@@ -35,9 +35,11 @@ public class ConstantValue
     public const string AccountCollection = "Account";
     public const string UserCollection = "User";
     public const string CategoryCollection = "Category";
+    public const string TransactionCollection = "Transaction";
     #endregion
 
     #region another value
     public const char PasswordHashDelimiter = ';';
+    public const string JWTUserIdKey = "userId";
     #endregion
 }

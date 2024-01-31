@@ -9,6 +9,7 @@ public static class DatabaseExtension
     public static IMongoCollection<UserEntity> UserColection(this IMongoDatabase database) => database.GetCollection<UserEntity>(ConstantValue.UserCollection);
     public static IMongoCollection<AccountEntity> AccountColection(this IMongoDatabase database) => database.GetCollection<AccountEntity>(ConstantValue.AccountCollection);
     public static IMongoCollection<CategoryEntity> CategoryColection(this IMongoDatabase database) => database.GetCollection<CategoryEntity>(ConstantValue.CategoryCollection);
+    public static IMongoCollection<TransactionEntity> TransactionColection(this IMongoDatabase database) => database.GetCollection<TransactionEntity>(ConstantValue.TransactionCollection);
 }
 
 
