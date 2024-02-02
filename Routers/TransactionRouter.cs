@@ -11,9 +11,29 @@ public static class TransactionRouter
         string groupName = "transaction";
         string tag = "Transaction";
 
-        builder.MapGet($"/{groupName}/getCategories", async (ITransactionService transactionService, int limit, int offset) => await transactionService.GetCategories(limit: limit, offset: offset)).WithTags(tag);
+        builder.MapGet($"/{groupName}/getCategories", async (HttpContext ctx, ITransactionService transactionService, int limit, int offset) =>
+        {
+            string? userIdToken = ctx.User.Claims.Where(c => c.Type == ConstantValue.JWTUserIdKey).Select(c => c.Value).SingleOrDefault();
+            if (userIdToken == null)
+                return Results.Unauthorized();
 
-        builder.MapPost($"/{groupName}/createCategory", async (ITransactionService transactionService, CreateCategoryRequest request) => await transactionService.InsertCategory(request: request)).WithTags(tag);
+            var value = await transactionService.GetCategories(userIdToken, limit: limit, offset: offset);
+            return Results.Ok(value);
+        }
+        ).WithTags(tag).RequireAuthorization();
+
+        builder.MapPost($"/{groupName}/createCategory", async (HttpContext ctx, ITransactionService transactionService, CreateCategoryRequest request) =>
+        {
+            string? userIdToken = ctx.User.Claims.Where(c => c.Type == ConstantValue.JWTUserIdKey).Select(c => c.Value).SingleOrDefault();
+
+            if (userIdToken == null || userIdToken != request.UserId)
+                return Results.Unauthorized();
+
+            var value = await transactionService.InsertCategory(request: request);
+            return Results.Ok(value: value);
+        }
+        ).WithTags(tag).RequireAuthorization();
+
 
         builder.MapPost($"/{groupName}/createTransaction", async (HttpContext ctx, ITransactionService transactionService, CreateNewTransactionRequest request) =>
         {

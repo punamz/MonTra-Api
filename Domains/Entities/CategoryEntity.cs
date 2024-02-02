@@ -13,4 +13,10 @@ public class CategoryEntity : Timestamp
     public CategoryType Type { get; set; }
     [BsonElement("category")]
     public string? Category { get; set; }
+    [BsonElement("color")]
+    public string? Color { get; set; }
+    [BsonElement("icon")]
+    public string? Icon { get; set; }
+    [BsonElement("userId")]
+    public string UserId { get; set; } = null!;
 }

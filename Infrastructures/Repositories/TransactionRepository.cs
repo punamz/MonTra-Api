@@ -23,7 +23,7 @@ public class TransactionRepository : ITransactionService
         _mapper = mapper;
     }
 
-    public async Task<ResultDTO<List<CategoryDTO>?>> GetCategories(int limit, int offset)
+    public async Task<ResultDTO<List<CategoryDTO>?>> GetCategories(string userId, int limit, int offset)
     {
         try
         {
@@ -31,7 +31,7 @@ public class TransactionRepository : ITransactionService
             if (limit < 0 || offset < 0)
                 return Helper.GetResponse<List<CategoryDTO>?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0002, message: ConstantValue.Err0002Message);
 
-            List<CategoryEntity> categories = await _database.CategoryColection().GetCategory(limit, offset);
+            List<CategoryEntity> categories = await _database.CategoryColection().GetCategory(userId, limit, offset);
             if (categories.IsNullOrEmpty())
                 return Helper.GetResponse<List<CategoryDTO>?>(statusCode: StatusCodeValue.NoData);
             else
@@ -49,7 +49,7 @@ public class TransactionRepository : ITransactionService
         try
         {
             string newCategorytId = ObjectId.GenerateNewId().ToString();
-            CategoryEntity category = new() { Id = newCategorytId, Category = request.Category, Type = request.Type };
+            CategoryEntity category = new() { Id = newCategorytId, Category = request.Category, Type = request.Type, Color = request.Color, Icon = request.Icon, UserId = request.UserId };
             await _database.CategoryColection().CreateNewCategory(category);
             return Helper.GetResponse<bool?>(data: true);
         }

@@ -12,9 +12,9 @@ public static class CategoryQuery
         return categories;
     }
 
-    public static async Task<List<CategoryEntity>> GetCategory(this IMongoCollection<CategoryEntity> collection, int limit, int offset)
+    public static async Task<List<CategoryEntity>> GetCategory(this IMongoCollection<CategoryEntity> collection, string userId, int limit, int offset)
     {
-        List<CategoryEntity> categories = await collection.Find(_ => true).Skip(offset).Limit(limit).ToListAsync();
+        List<CategoryEntity> categories = await collection.Find(x => x.UserId == null || x.UserId == userId).Skip(offset).Limit(limit).ToListAsync();
         return categories;
     }
 }
