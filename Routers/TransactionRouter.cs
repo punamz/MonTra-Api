@@ -60,6 +60,16 @@ public static class TransactionRouter
                                                             categoryId: categoryId);
             return Results.Ok(result);
         }).WithTags(tag).RequireAuthorization();
+
+        builder.MapGet($"/{groupName}/getFrequency", async (HttpContext ctx, ITransactionService transactionService, string userId, int timeZone, FrequencyType frequencyType, CategoryType categoryType) =>
+        {
+            string? userIdToken = ctx.User.Claims.Where(c => c.Type == ConstantValue.JWTUserIdKey).Select(c => c.Value).SingleOrDefault();
+            if (userIdToken == null || userIdToken != userId)
+                return Results.Unauthorized();
+
+            var result = await transactionService.GetFrequency(userId: userId, timeZone: timeZone, frequencyType: frequencyType, categoryType: categoryType);
+            return Results.Ok(result);
+        }).WithTags(tag).RequireAuthorization();
     }
 
 }

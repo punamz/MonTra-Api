@@ -107,4 +107,92 @@ public class TransactionRepository : ITransactionService
             return Helper.GetResponse<List<TransactionDTO>?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
         }
     }
+
+    public async Task<ResultDTO<GetFrequencyResponse?>> GetFrequency(string userId, int timeZone, FrequencyType frequencyType, CategoryType categoryType)
+    {
+        try
+        {
+            DateTime startTime = CalStartTimeFrequency(type: frequencyType, timeZone: timeZone);
+            int frequencyLength = frequencyType switch
+            {
+                FrequencyType.Today => 24,
+                FrequencyType.Week => 7,
+                FrequencyType.Month => DateTime.DaysInMonth(startTime.Year, startTime.Month),
+                FrequencyType.Year => 12,
+                _ => 0
+            };
+            GetFrequencyResponse result = new()
+            {
+                Frequency = Enumerable.Repeat(0, frequencyLength).ToList()
+            };
+
+            List<TransactionFrequencyEntity> transactionFrequencies = await _database.GetTransactionFrequency(userId: userId, categoryType: categoryType, startTime: startTime);
+            if (transactionFrequencies == null)
+                return Helper.GetResponse<GetFrequencyResponse?>(statusCode: StatusCodeValue.NoData);
+
+            foreach (var transactionFrequency in transactionFrequencies)
+            {
+                transactionFrequency.TransactionAt.AddHours(timeZone);
+                switch (frequencyType)
+                {
+                    case FrequencyType.Today:
+                        result.Frequency[transactionFrequency.TransactionAt.Hour] += transactionFrequency.Amount;
+                        break;
+                    case FrequencyType.Week:
+                        result.Frequency[((int)transactionFrequency.TransactionAt.DayOfWeek + 6) % 7] += transactionFrequency.Amount;
+                        break;
+                    case FrequencyType.Month:
+                        result.Frequency[transactionFrequency.TransactionAt.Day - 1] += transactionFrequency.Amount;
+                        break;
+                    case FrequencyType.Year:
+                        result.Frequency[transactionFrequency.TransactionAt.Month - 1] += transactionFrequency.Amount;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return Helper.GetResponse<GetFrequencyResponse?>(data: result);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return Helper.GetResponse<GetFrequencyResponse?>(statusCode: StatusCodeValue.Fail, errorCode: ConstantValue.Err0001, message: $"Error: {e.Message}");
+        }
+    }
+
+    private static DateTime CalStartTimeFrequency(FrequencyType type, int timeZone)
+    {
+        switch (type)
+        {
+            case FrequencyType.Today:
+                {
+                    var today = DateTime.Now;
+                    return today.AddHours(-timeZone);
+                }
+            case FrequencyType.Week:
+                {
+                    var today = DateTime.Now.AddHours(-timeZone);
+                    int delta = DayOfWeek.Monday - today.DayOfWeek;
+                    if (delta > 0) delta -= 7;
+                    return today.AddDays(delta);
+                }
+            case FrequencyType.Month:
+                {
+                    var today = DateTime.Now.AddHours(-timeZone);
+                    return new DateTime(today.Year, today.Month, 1, 0, 0, 0, 0);
+                }
+            case FrequencyType.Year:
+                {
+                    var today = DateTime.Now.AddHours(-timeZone);
+                    return new DateTime(today.Year, 1, 1, 0, 0, 0, 0);
+                }
+            default:
+                {
+                    var result = DateTime.Now;
+                    return result.AddHours(-timeZone);
+                }
+
+        }
+
+    }
 }

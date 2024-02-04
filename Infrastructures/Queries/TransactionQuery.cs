@@ -57,4 +57,32 @@ public static class TransactionQuery
         };
     }
 
+    /// <summary>
+    /// get all transaction for Frequency 
+    /// </summary>
+    /// <param name="database"></param>
+    /// <param name="userId"></param>
+    /// <param name="categoryType"></param>
+    /// <param name="startTime"></param>
+    /// <returns></returns>
+    public static async Task<List<TransactionFrequencyEntity>> GetTransactionFrequency(this IMongoDatabase database, string userId, CategoryType? categoryType, DateTime startTime)
+    {
+        IMongoCollection<TransactionEntity> transactionCollection = database.TransactionColection();
+        IMongoCollection<CategoryEntity> categoryCollection = database.CategoryColection();
+
+        List<TransactionFrequencyEntity> transactions = await transactionCollection
+             .Aggregate()
+             .Match(x => x.UserId == userId && x.TransactionAt > startTime)
+             .Lookup<TransactionEntity, CategoryEntity, TransactionAggregate>(categoryCollection, transactionEntity => transactionEntity.CategoryId, category => category.Id, transactionAggregate => transactionAggregate.Category)
+             .Unwind(p => p.Category, new AggregateUnwindOptions<TransactionAggregate>() { PreserveNullAndEmptyArrays = true })
+             .Match(x => x.Category.Type == categoryType)
+             .Project(x => new TransactionFrequencyEntity()
+             {
+                 TransactionAt = x.TransactionAt,
+                 Amount = x.Amount
+             })
+             .ToListAsync();
+        return transactions;
+    }
+
 }
