@@ -84,7 +84,7 @@ public class TransactionRepository : ITransactionService
         }
     }
 
-    public async Task<ResultDTO<List<TransactionDTO>?>> GetTransactions(string userId, int limit, int offset, OrderByType orderBy, CategoryType? categoryType = null, string? categoryId = null)
+    public async Task<ResultDTO<List<TransactionDTO>?>> GetTransactions(string userId, int limit, int offset, OrderByType orderBy, CategoryType? categoryType = null, List<string>? categoriesId = null)
     {
         try
         {
@@ -94,7 +94,7 @@ public class TransactionRepository : ITransactionService
                 offset: offset,
                 OrderBy: orderBy,
                 categoryType: categoryType,
-                categoryId: categoryId);
+                categoriesId: categoriesId);
 
             if (result.IsNullOrEmpty())
                 return Helper.GetResponse<List<TransactionDTO>?>(statusCode: StatusCodeValue.NoData);

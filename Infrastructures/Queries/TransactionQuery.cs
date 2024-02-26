@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using MonTraApi.Common;
 using MonTraApi.Domains.Entities;
 
@@ -27,7 +28,7 @@ public static class TransactionQuery
     /// <param name="limit"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public static async Task<List<TransactionAggregate>> GetTransactionAggregate(this IMongoDatabase database, string userId, int limit, int offset, OrderByType OrderBy, CategoryType? categoryType = null, string? categoryId = null)
+    public static async Task<List<TransactionAggregate>> GetTransactionAggregate(this IMongoDatabase database, string userId, int limit, int offset, OrderByType OrderBy, CategoryType? categoryType = null, List<string>? categoriesId = null)
     {
         IMongoCollection<TransactionEntity> transactionCollection = database.TransactionColection();
         IMongoCollection<CategoryEntity> categoryCollection = database.CategoryColection();
@@ -35,13 +36,13 @@ public static class TransactionQuery
         List<TransactionAggregate> transactions = await transactionCollection
             .Aggregate()
             .Match(x => x.UserId == userId)
-            .Match(x => categoryId == null || categoryId == x.CategoryId)
+            .Match(x => categoriesId == null || categoriesId.IsNullOrEmpty() || categoriesId.Contains(x.CategoryId))
             .Sort(OrderBy)
             .Lookup<TransactionEntity, CategoryEntity, TransactionAggregate>(categoryCollection, transactionEntity => transactionEntity.CategoryId, category => category.Id, transactionAggregate => transactionAggregate.Category)
             .Unwind(p => p.Category, new AggregateUnwindOptions<TransactionAggregate>() { PreserveNullAndEmptyArrays = true })
-            .Match(x => categoryId != null || categoryType == null || x.Category.Type == categoryType)
-            .Limit(limit)
+            .Match(x => categoriesId != null || categoryType == null || x.Category.Type == categoryType)
             .Skip(offset)
+            .Limit(limit)
             .ToListAsync();
         return transactions;
     }

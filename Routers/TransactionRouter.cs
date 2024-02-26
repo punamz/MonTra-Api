@@ -46,7 +46,7 @@ public static class TransactionRouter
             return Results.Ok(value: value);
         }).WithTags(tag).RequireAuthorization();
 
-        builder.MapGet($"/{groupName}/getTransactions", async (HttpContext ctx, ITransactionService transactionService, string userId, int limit, int offset, OrderByType? orderBy, CategoryType? categoryType, string? categoryId) =>
+        builder.MapGet($"/{groupName}/getTransactions", async (HttpContext ctx, ITransactionService transactionService, string userId, int limit, int offset, OrderByType? orderBy, CategoryType? categoryType, string[]? categoriesId) =>
         {
             string? userIdToken = ctx.User.Claims.Where(c => c.Type == ConstantValue.JWTUserIdKey).Select(c => c.Value).SingleOrDefault();
             if (userIdToken == null || userIdToken != userId)
@@ -57,7 +57,7 @@ public static class TransactionRouter
                                                             offset: offset,
                                                             orderBy: orderBy ?? OrderByType.Newest,
                                                             categoryType: categoryType,
-                                                            categoryId: categoryId);
+                                                            categoriesId: categoriesId?.ToList());
             return Results.Ok(result);
         }).WithTags(tag).RequireAuthorization();
 
